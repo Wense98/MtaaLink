@@ -15,6 +15,12 @@ class Review extends Model
         'rating',
         'comment',
         'image_path',
+        'reply',
+        'replied_at',
+    ];
+
+    protected $casts = [
+        'replied_at' => 'datetime',
     ];
 
     public function user()

@@ -50,6 +50,7 @@ class WorkerProfileController extends Controller
         $validated = $request->validate([
             'service_id' => ['required', 'exists:services,id'],
             'bio' => ['nullable', 'string', 'max:1000'],
+            'skills' => ['nullable', 'string', 'max:255'],
             'experience_years' => ['required', 'integer', 'min:0', 'max:50'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'region' => ['required', 'string', 'max:255'],

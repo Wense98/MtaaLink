@@ -18,6 +18,14 @@ class SearchController extends Controller
                   ->where('is_verified', true);
             });
 
+        if ($request->filled('q')) {
+            $q = $request->get('q');
+            $query->where(function ($sub) use ($q) {
+                $sub->where('bio', 'like', "%{$q}%")
+                    ->orWhere('skills', 'like', "%{$q}%");
+            });
+        }
+
         if ($request->filled('service_id')) {
             $query->where('service_id', $request->service_id);
         }

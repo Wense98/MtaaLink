@@ -16,6 +16,7 @@
                 </div>
             </div>
 
+            @if(Auth::user()->role === 'worker')
                 <!-- Profile Completeness & Performance -->
                 @php
                     $profile = Auth::user()->workerProfile;
@@ -310,7 +311,7 @@
                                                             <button type="submit" class="text-teal-600 hover:text-teal-900 font-bold">Complete Job</button>
                                                         </form>
                                                         <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $request->user->phone) }}" target="_blank" class="text-green-500 hover:scale-110 transition-transform">
-                                                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                                                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338-11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
                                                         </a>
                                                      </div>
                                                 @else
@@ -328,36 +329,79 @@
                         </div>
                     </div>
 
-                    <!-- My Ratings / Reviews -->
-                    <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 md:col-span-2">
+                    <!-- Latest Reviews -->
+                    <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 md:col-span-2 border border-gray-100">
                         <div class="flex justify-between items-center mb-6">
-                            <h4 class="font-semibold text-lg text-gray-800 dark:text-gray-200">My Reputation</h4>
-                            <div class="flex items-center gap-1 bg-yellow-50 px-3 py-1 rounded-full">
-                                <span class="text-sm font-black text-yellow-700">{{ number_format(Auth::user()->receivedReviews()->avg('rating') ?? 5, 1) }}</span>
-                                <svg class="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <div class="flex items-center gap-3">
+                                <h4 class="font-bold text-lg text-gray-900 dark:text-gray-100 italic">Latest Community Feedback</h4>
+                                <div class="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded-full border border-yellow-100">
+                                    <span class="text-[10px] font-black text-yellow-700">{{ number_format(Auth::user()->receivedReviews()->avg('rating') ?? 5, 1) }}</span>
+                                    <svg class="w-3 h-3 text-yellow-500 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                </div>
                             </div>
+                            <span class="text-xs font-bold text-gray-400 capitalize">Reputation Management</span>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @forelse(Auth::user()->receivedReviews()->latest()->take(4)->get() as $review)
-                                <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-600">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @forelse(Auth::user()->receivedReviews()->latest()->get() as $review)
+                                @php
+                                    $isVerifiedHire = \App\Models\Request::where('user_id', $review->user_id)
+                                        ->where('worker_id', $review->worker_id)
+                                        ->where('status', 'completed')
+                                        ->exists();
+                                @endphp
+                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 group">
                                     <div class="flex justify-between items-start mb-2">
-                                        <span class="text-xs font-bold text-gray-900 dark:text-gray-100">{{ $review->user->name }}</span>
-                                        <div class="flex">
-                                            @for($i=1; $i<=5; $i++)
-                                                <svg class="w-2.5 h-2.5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-200' }} fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                            @endfor
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs uppercase">
+                                                {{ substr($review->user->name, 0, 1) }}
+                                            </div>
+                                            <div>
+                                                <div class="flex items-center gap-2">
+                                                    <p class="text-sm font-bold text-gray-900 leading-none">{{ $review->user->name }}</p>
+                                                    @if($isVerifiedHire)
+                                                        <svg class="w-3 h-3 text-teal-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center mt-1">
+                                                    @for($i=1; $i<=5; $i++)
+                                                        <svg class="w-2.5 h-2.5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-200' }} fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                                    @endfor
+                                                </div>
+                                            </div>
                                         </div>
+                                        <span class="text-[10px] text-gray-400">{{ $review->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <p class="text-xs text-gray-500 italic">"{{ $review->comment }}"</p>
-                                    <span class="block text-[10px] text-gray-400 mt-2">{{ $review->created_at->diffForHumans() }}</span>
+                                    <p class="text-xs text-gray-600 italic line-clamp-2 mb-3">"{{ $review->comment }}"</p>
+                                    
+                                    @if($review->reply)
+                                        <div class="bg-white p-3 rounded-xl border-l-2 border-teal-500 shadow-sm">
+                                            <p class="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Your Reply</p>
+                                            <p class="text-[11px] text-gray-700 font-medium">{{ $review->reply }}</p>
+                                        </div>
+                                    @else
+                                        <div x-data="{ replying: false }">
+                                            <button @click="replying = true" x-show="!replying" class="text-[10px] font-black text-teal-600 uppercase tracking-widest hover:underline">Reply Now</button>
+                                            <div x-show="replying" x-cloak class="mt-2 animate-fade-in">
+                                                <form action="{{ route('reviews.reply', $review->id) }}" method="POST">
+                                                    @csrf
+                                                    <textarea name="reply" placeholder="Thank you for your feedback..." class="w-full rounded-xl border-gray-200 text-xs py-2 focus:ring-teal-500" rows="2" required></textarea>
+                                                    <div class="flex gap-2 mt-2">
+                                                        <button type="submit" class="bg-teal-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg">Send</button>
+                                                        <button type="button" @click="replying = false" class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Cancel</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             @empty
-                                <div class="col-span-2 text-center py-6 text-gray-400 italic text-sm">No reviews yet. Deliver great service to get your first one!</div>
+                                <div class="col-span-full py-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                                    <p class="text-sm text-gray-400 font-medium">No reviews received yet. Focus on high-quality service!</p>
+                                </div>
                             @endforelse
                         </div>
                     </div>
-                </div>
-
                 </div>
 
             @elseif(Auth::user()->role === 'admin')

@@ -87,6 +87,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 // Public Worker Profile View (accessible to auth users)
 Route::get('/worker/{id}', [\App\Http\Controllers\WorkerProfileController::class, 'show'])->name('worker.show')->middleware('auth');
 Route::post('/worker/{id}/review', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
+Route::post('/reviews/{id}/reply', [\App\Http\Controllers\ReviewController::class, 'reply'])->name('reviews.reply')->middleware('auth');
 Route::post('/worker/{id}/request', [\App\Http\Controllers\ServiceRequestController::class, 'store'])->name('requests.store')->middleware('auth');
 Route::patch('/requests/{id}/status', [\App\Http\Controllers\ServiceRequestController::class, 'updateStatus'])->name('requests.update-status')->middleware('auth');
 Route::post('/requests/{id}/accept-quote', [\App\Http\Controllers\ServiceRequestController::class, 'acceptQuote'])->name('requests.accept-quote')->middleware('auth');

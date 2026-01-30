@@ -88,9 +88,6 @@
                         </div>
                     </div>
 
-                        </div>
-                    </div>
-
                     <!-- Achievements & Badges -->
                     @php $achievements = $user->workerProfile->getAchievements(); @endphp
                     @if(count($achievements) > 0)
@@ -163,6 +160,16 @@
                                 <p class="italic text-gray-400">This professional has not provided a bio yet.</p>
                             @endif
                         </div>
+
+                        @if($user->workerProfile->skills)
+                            <div class="mb-8 flex flex-wrap gap-2">
+                                @foreach(explode(',', $user->workerProfile->skills) as $skill)
+                                    <span class="px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 text-[10px] font-black rounded-full border border-teal-100 dark:border-teal-800 uppercase tracking-tight">
+                                        {{ trim($skill) }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-2xl border border-gray-100 flex items-center gap-4">
@@ -252,7 +259,13 @@
 
                          <!-- List Reviews -->
                          <div class="space-y-8 mb-12">
-                            @forelse($user->receivedReviews as $review)
+                             @forelse($user->receivedReviews->sortByDesc('created_at') as $review)
+                                @php
+                                    $isVerifiedHire = \App\Models\Request::where('user_id', $review->user_id)
+                                        ->where('worker_id', $review->worker_id)
+                                        ->where('status', 'completed')
+                                        ->exists();
+                                @endphp
                                 <div class="group">
                                     <div class="flex items-start gap-4">
                                         <div class="w-12 h-12 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold group-hover:scale-110 transition-transform">
@@ -260,7 +273,15 @@
                                         </div>
                                         <div class="flex-grow">
                                             <div class="flex items-center justify-between mb-1">
-                                                <h4 class="font-bold text-gray-900 dark:text-gray-100">{{ $review->user->name }}</h4>
+                                                <div class="flex items-center gap-2">
+                                                    <h4 class="font-bold text-gray-900 dark:text-gray-100">{{ $review->user->name }}</h4>
+                                                    @if($isVerifiedHire)
+                                                        <span class="flex items-center gap-1 bg-teal-50 text-teal-600 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-teal-100">
+                                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                            Verified Hire
+                                                        </span>
+                                                    @endif
+                                                </div>
                                                 <span class="text-xs text-gray-400">{{ $review->created_at->format('M d, Y') }}</span>
                                             </div>
                                             <div class="flex items-center mb-3">
@@ -268,15 +289,43 @@
                                                     <svg class="w-3.5 h-3.5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-200' }} fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                                                 @endfor
                                             </div>
-                                            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-l-2 border-gray-100 pl-4 py-1 italic mb-4">
+                                            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-l-2 border-gray-100 dark:border-gray-700 pl-4 py-1 italic mb-4">
                                                 "{{ $review->comment }}"
                                             </p>
 
                                             @if($review->image_path)
-                                                <div class="mt-4">
+                                                <div class="mt-4 mb-4">
                                                     <a href="{{ asset('storage/' . $review->image_path) }}" target="_blank" class="block w-32 h-32 rounded-xl overflow-hidden border-2 border-gray-50 hover:border-teal-500 transition-colors shadow-sm">
                                                         <img src="{{ asset('storage/' . $review->image_path) }}" class="w-full h-full object-cover transform hover:scale-110 transition-transform" alt="Review Evidence">
                                                     </a>
+                                                </div>
+                                            @endif
+
+                                            <!-- Worker Reply Section -->
+                                            @if($review->reply)
+                                                <div class="mt-4 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border-l-4 border-teal-500 relative">
+                                                    <div class="flex items-center gap-2 mb-2">
+                                                        <span class="text-[10px] font-black text-teal-600 uppercase tracking-widest">Worker Response</span>
+                                                        <span class="text-[9px] text-gray-400">{{ $review->replied_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    <p class="text-sm text-gray-700 dark:text-gray-300 font-medium leading-relaxed">
+                                                        {{ $review->reply }}
+                                                    </p>
+                                                </div>
+                                            @elseif(Auth::id() === $user->id)
+                                                <div x-data="{ replying: false }" class="mt-2">
+                                                    <button @click="replying = true" x-show="!replying" class="text-[10px] font-black text-teal-600 uppercase tracking-widest hover:underline">Reply to this review</button>
+                                                    
+                                                    <div x-show="replying" x-cloak class="mt-2 animate-fade-in">
+                                                        <form action="{{ route('reviews.reply', $review->id) }}" method="POST">
+                                                            @csrf
+                                                            <textarea name="reply" placeholder="Write your professional thank you or response..." class="w-full rounded-xl border-gray-200 text-sm py-2 mb-2 focus:ring-teal-500" rows="2" required></textarea>
+                                                            <div class="flex gap-2">
+                                                                <button type="submit" class="bg-teal-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-lg shadow-sm">Send Reply</button>
+                                                                <button type="button" @click="replying = false" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cancel</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             @endif
                                         </div>

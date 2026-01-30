@@ -46,6 +46,14 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('bio')" />
                             </div>
 
+                            <!-- Skills -->
+                            <div>
+                                <x-input-label for="skills" :value="__('Specialized Skills')" />
+                                <x-text-input id="skills" name="skills" type="text" class="mt-1 block w-full" :value="old('skills', $profile->skills)" placeholder="e.g. Pipe Leakage, Wiring, CCTV installation" />
+                                <p class="mt-1 text-sm text-gray-500 italic">Separate skills with commas.</p>
+                                <x-input-error class="mt-2" :messages="$errors->get('skills')" />
+                            </div>
+
                             <!-- Experience (Years) -->
                             <div>
                                 <x-input-label for="experience_years" :value="__('Experience (Years)')" />

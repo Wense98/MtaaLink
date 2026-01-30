@@ -46,4 +46,30 @@ class ReviewController extends Controller
 
         return back()->with('status', 'review-submitted');
     }
+
+    /**
+     * Store a reply to a review.
+     */
+    public function reply(Request $request, $review_id): RedirectResponse
+    {
+        $review = Review::findOrFail($review_id);
+
+        if (Auth::id() !== $review->worker_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'reply' => ['required', 'string', 'max:500'],
+        ]);
+
+        $review->update([
+            'reply' => $request->reply,
+            'replied_at' => now(),
+        ]);
+
+        // Notify the reviewer (customer)
+        $review->user->notify(new \App\Notifications\ReviewRepliedNotification($review));
+
+        return back()->with('status', 'reply-submitted');
+    }
 }

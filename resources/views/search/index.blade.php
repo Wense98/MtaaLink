@@ -12,7 +12,13 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8 border border-gray-100">
                 <div class="p-6 bg-white border-b border-gray-100">
                     <form method="GET" action="{{ route('search.index') }}" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                            <!-- Keywords -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Keywords</label>
+                                <input type="text" name="q" placeholder="e.g. leaking, CCTV" value="{{ request('q') }}" class="w-full rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm text-sm" />
+                            </div>
+
                             <!-- Service Type -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
@@ -24,31 +30,30 @@
                                 </select>
                             </div>
 
-                            <!-- Location (Simplified to one field for UX, but mapping to Ward for now) -->
+                            <!-- Location -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Location (Mtaa/Ward)</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
                                 <input type="text" name="ward" placeholder="e.g. Sinza" value="{{ request('ward') }}" class="w-full rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm text-sm" />
                             </div>
 
                             <!-- Experience -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Min Experience</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Experience</label>
                                 <select name="min_experience" class="w-full rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm text-sm">
-                                    <option value="">Any Experience</option>
-                                    <option value="1" @selected(request('min_experience') == 1)>1+ Year</option>
-                                    <option value="3" @selected(request('min_experience') == 3)>3+ Years</option>
-                                    <option value="5" @selected(request('min_experience') == 5)>5+ Years</option>
-                                    <option value="10" @selected(request('min_experience') == 10)>10+ Years</option>
+                                    <option value="">Any</option>
+                                    <option value="1" @selected(request('min_experience') == 1)>1+ Yr</option>
+                                    <option value="3" @selected(request('min_experience') == 3)>3+ Yrs</option>
+                                    <option value="5" @selected(request('min_experience') == 5)>5+ Yrs</option>
                                 </select>
                             </div>
 
                             <!-- Rating -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Min Rating</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
                                 <select name="min_rating" class="w-full rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm text-sm">
-                                    <option value="">Any Rating</option>
-                                    <option value="4" @selected(request('min_rating') == 4)>4+ Stars</option>
-                                    <option value="4.5" @selected(request('min_rating') == 4.5)>4.5+ Stars</option>
+                                    <option value="">Any</option>
+                                    <option value="4" @selected(request('min_rating') == 4)>4+ ★</option>
+                                    <option value="4.5" @selected(request('min_rating') == 4.5)>4.5+ ★</option>
                                 </select>
                             </div>
 
@@ -56,13 +61,10 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
                                 <select name="sort" class="w-full rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm text-sm">
-                                    <option value="newest" @selected(request('sort') == 'newest')>Newest First</option>
-                                    <option value="price_low" @selected(request('sort') == 'price_low')>Price: Low to High</option>
-                                    <option value="price_high" @selected(request('sort') == 'price_high')>Price: High to Low</option>
-                                    <option value="experience" @selected(request('sort') == 'experience')>Most Experienced</option>
-                                    @if(request()->filled('lat'))
-                                        <option value="distance" @selected(request('sort') == 'distance')>Nearby (Distance)</option>
-                                    @endif
+                                    <option value="newest" @selected(request('sort') == 'newest')>Newest</option>
+                                    <option value="price_low" @selected(request('sort') == 'price_low')>Price ↓</option>
+                                    <option value="price_high" @selected(request('sort') == 'price_high')>Price ↑</option>
+                                    <option value="experience" @selected(request('sort') == 'experience')>Experience</option>
                                 </select>
                             </div>
                         </div>
@@ -196,6 +198,19 @@
                                     <span class="font-bold text-gray-900 border-b-2 border-teal-100">TZS {{ number_format($p->price) }} <span class="text-xs font-normal text-gray-400">start</span></span>
                                 </div>
                             </div>
+
+                            @if($p->skills)
+                                <div class="mt-4 flex flex-wrap gap-1">
+                                    @foreach(array_slice(explode(',', $p->skills), 0, 3) as $skill)
+                                        <span class="px-2 py-0.5 bg-gray-50 text-gray-500 text-[9px] font-bold rounded-full border border-gray-100 uppercase tracking-tighter">
+                                            {{ trim($skill) }}
+                                        </span>
+                                    @endforeach
+                                    @if(count(explode(',', $p->skills)) > 3)
+                                        <span class="text-[9px] text-gray-400 font-bold self-center">+{{ count(explode(',', $p->skills)) - 3 }}</span>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Card Footer -->
@@ -223,6 +238,7 @@
                         <h3 class="text-lg font-medium text-gray-900">No workers found........</h3>
                         <p class="text-gray-500">Try adjusting your location filters or search for a different service...</p>
                     </div>
+                    @endforelse
                 </div>
 
                 <!-- Map View Container -->

@@ -10,7 +10,7 @@ class WorkerProfile extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'service_id', 'bio', 'experience_years', 'price',
+        'user_id', 'service_id', 'bio', 'skills', 'experience_years', 'price',
         'region', 'district', 'ward', 'street', 'latitude', 'longitude', 'id_document', 'police_clearance', 'is_featured', 'is_available', 'views_count'
     ];
 
