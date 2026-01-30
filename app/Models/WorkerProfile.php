@@ -33,6 +33,54 @@ class WorkerProfile extends Model
         return $this->hasMany(WorkerPortfolioImage::class);
     }
 
+    public function getAchievements()
+    {
+        $badges = [];
+        
+        // Verified Pro
+        if ($this->user->is_verified) {
+            $badges[] = [
+                'name' => 'Mtaa Verified',
+                'description' => 'ID Identity confirmed by MtaaLink',
+                'icon' => 'verified',
+                'color' => 'teal'
+            ];
+        }
+
+        // Ratings Badge
+        $avgRating = $this->user->receivedReviews()->avg('rating');
+        if ($avgRating >= 4.5 && $this->user->receivedReviews()->count() >= 5) {
+            $badges[] = [
+                'name' => 'Community Favorite',
+                'description' => 'Highly rated by local residents',
+                'icon' => 'heart',
+                'color' => 'red'
+            ];
+        }
+
+        // Experience Badge
+        if ($this->experience_years >= 10) {
+            $badges[] = [
+                'name' => 'Elite Experience',
+                'description' => 'Over 10 years of professional work',
+                'icon' => 'star',
+                'color' => 'blue'
+            ];
+        }
+
+        // Popularity Badge
+        if ($this->views_count >= 100) {
+            $badges[] = [
+                'name' => 'Popular Pro',
+                'description' => 'Gained high visibility in their mtaa',
+                'icon' => 'fire',
+                'color' => 'orange'
+            ];
+        }
+
+        return $badges;
+    }
+
     public function scopeVisible($query)
     {
         return $query->whereHas('user', function ($q) {

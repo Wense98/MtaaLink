@@ -88,6 +88,43 @@
                         </div>
                     </div>
 
+                        </div>
+                    </div>
+
+                    <!-- Achievements & Badges -->
+                    @php $achievements = $user->workerProfile->getAchievements(); @endphp
+                    @if(count($achievements) > 0)
+                    <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2 bg-yellow-50 rounded-lg text-yellow-600">
+                                <svg class="w-6 h-6 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-gray-900 dark:text-gray-100">Service Achievements</h3>
+                        </div>
+                        <div class="space-y-4">
+                            @foreach($achievements as $badge)
+                                <div class="flex items-center gap-3 p-3 rounded-xl bg-{{ $badge['color'] }}-50/50 border border-{{ $badge['color'] }}-100 group hover:shadow-md transition-all">
+                                    <div class="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center text-{{ $badge['color'] }}-600 group-hover:scale-110 transition-transform">
+                                        @if($badge['icon'] === 'verified')
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        @elseif($badge['icon'] === 'heart')
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                                        @elseif($badge['icon'] === 'star')
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                        @elseif($badge['icon'] === 'fire')
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.4503-.342c-.714.442-1.531.634-2.311.634-2.127 0-3.991-1.45-3.991-3.595 0-.671.223-1.302.618-1.81a1 1 0 00-.162-1.313 1.001 1.001 0 00-1.144-.133C2.808 2.146 1.906 3.559 1.906 5.176c0 3.299 2.492 5.925 5.538 5.925.79 0 1.553-.171 2.237-.49a1 1 0 00.538-.89 1 1 0 00-.63-.919c-.392-.156-.73-.43-1.002-.796 1.047-.033 2.044-.317 2.846-.826 1.517-.962 2.327-2.346 2.327-3.853 0-.62-.12-1.222-.34-1.783z" clip-rule="evenodd"></path></svg>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-black text-{{ $badge['color'] }}-600 uppercase tracking-widest leading-none mb-1">{{ $badge['name'] }}</p>
+                                        <p class="text-[10px] text-gray-500 font-medium leading-tight">{{ $badge['description'] }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Location Card -->
                     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
                         <div class="flex items-center gap-3 mb-6">

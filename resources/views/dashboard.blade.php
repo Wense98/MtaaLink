@@ -118,28 +118,68 @@
                         </div>
                     </div>
                     
+                    <!-- Market Intelligence -->
+                    <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 flex flex-col justify-between border border-gray-100">
+                         <div class="flex items-center gap-2 mb-4">
+                            <h4 class="font-bold text-lg text-gray-900 dark:text-gray-100 italic">Market Intelligence</h4>
+                            <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-[8px] font-black uppercase tracking-widest border border-indigo-100">Live</span>
+                         </div>
+                         
+                         @php
+                            $profile = Auth::user()->workerProfile;
+                            $competitorsInWard = \App\Models\WorkerProfile::where('service_id', $profile->service_id)
+                                ->where('ward', $profile->ward)
+                                ->where('user_id', '!=', Auth::id())
+                                ->count();
+                            $avgPriceInDistrict = \App\Models\WorkerProfile::where('service_id', $profile->service_id)
+                                ->where('district', $profile->district)
+                                ->avg('price');
+                         @endphp
+
+                         <div class="space-y-4">
+                             <div class="flex items-center justify-between">
+                                 <span class="text-xs text-gray-500 font-medium italic">Peers in {{ $profile->ward ?: 'Your Ward' }}</span>
+                                 <span class="text-sm font-black text-gray-900">{{ $competitorsInWard }} Pros</span>
+                             </div>
+                             <div class="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
+                                 <div class="h-full bg-indigo-500 rounded-full" style="width: {{ min(100, ($competitorsInWard + 1) * 20) }}%"></div>
+                             </div>
+                             <div class="flex items-center justify-between">
+                                 <span class="text-xs text-gray-500 font-medium italic">Avg Price in {{ $profile->district ?: 'District' }}</span>
+                                 <span class="text-sm font-black text-teal-600">TZS {{ number_format($avgPriceInDistrict ?: 0) }}</span>
+                             </div>
+                             @if($profile->price < $avgPriceInDistrict)
+                                <p class="text-[10px] text-green-600 font-bold bg-green-50 p-2 rounded-lg border border-green-100">
+                                    Your price is below average. High potential for direct bookings!
+                                </p>
+                             @elseif($profile->price > $avgPriceInDistrict)
+                                <p class="text-[10px] text-amber-600 font-bold bg-amber-50 p-2 rounded-lg border border-amber-100">
+                                    Your price is above average. Make sure your portfolio shines!
+                                </p>
+                             @endif
+                         </div>
+                    </div>
+
                     <!-- Availability Status -->
-                    <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 flex flex-col justify-between">
-                         <h4 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-2">Availability</h4>
-                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">
-                                Currently: 
+                    <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border border-gray-100">
+                         <h4 class="font-bold text-lg text-gray-900 dark:text-gray-100 italic mb-4">Availability Status</h4>
+                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <span class="text-xs font-bold text-gray-600 dark:text-gray-400">
                                 @if(Auth::user()->workerProfile->is_available)
-                                    <span class="text-green-600 font-bold">Available for Work</span>
+                                    <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Receiving Requests</span>
                                 @else
-                                    <span class="text-red-500 font-bold">Busy / Unavailable</span>
+                                    <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gray-400"></span> Appear Unavailable</span>
                                 @endif
                             </span>
                             
                             <form action="{{ route('worker-profile.availability') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ Auth::user()->workerProfile->is_available ? 'bg-teal-600' : 'bg-gray-200' }}">
-                                    <span class="sr-only">Use setting</span>
                                     <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ Auth::user()->workerProfile->is_available ? 'translate-x-5' : 'translate-x-0' }}"></span>
                                 </button>
                             </form>
                          </div>
-                         <p class="text-xs text-gray-500 mt-2">Toggle off when you are busy or strictly off-duty.</p>
+                         <p class="text-[10px] text-gray-400 font-medium mt-3 italic">Turning this off will hide your profile from most search results temporarily.</p>
                     </div>
 
                     <!-- Incoming Requests -->
