@@ -11,8 +11,21 @@ Route::get('/', function () {
         ->inRandomOrder()
         ->limit(4)
         ->get();
+
+    // Fetch dynamic categories based on worker counts
+    $popularCategories = \App\Models\Service::withCount('workerProfiles')
+        ->orderByDesc('worker_profiles_count')
+        ->limit(6)
+        ->get();
+
+    // Fetch recent successful activities (accepted or completed requests)
+    $recentActivity = \App\Models\Request::with(['user', 'worker', 'worker.workerProfile.service'])
+        ->whereIn('status', ['accepted', 'completed'])
+        ->latest()
+        ->limit(3)
+        ->get();
         
-    return view('welcome', compact('featuredWorkers'));
+    return view('welcome', compact('featuredWorkers', 'popularCategories', 'recentActivity'));
 })->name('welcome');
 
 Route::get('/dashboard', function () {

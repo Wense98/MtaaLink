@@ -233,51 +233,73 @@
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                <!-- Category Item -->
-                <a href="{{ route('search.index') }}?service=1" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-teal-200 transition-all text-center group">
-                    <div class="w-12 h-12 mx-auto bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                    </div>
-                    <span class="font-semibold text-gray-700 group-hover:text-teal-600">Cleaning</span>
-                </a>
+                @php
+                    $colors = ['teal', 'blue', 'indigo', 'pink', 'purple', 'orange'];
+                @endphp
+                @foreach($popularCategories as $index => $category)
+                    <a href="{{ route('search.index') }}?service={{ $category->id }}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-{{ $colors[$index % 6] }}-200 transition-all text-center group">
+                        <div class="w-14 h-14 mx-auto bg-{{ $colors[$index % 6] }}-50 text-{{ $colors[$index % 6] }}-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-bold text-gray-800 group-hover:text-{{ $colors[$index % 6] }}-600 transition-colors block">{{ $category->name }}</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1 block">{{ $category->worker_profiles_count }} Pros</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    <!-- Mtaa Activity Pulse -->
+    @if($recentActivity->count() > 0)
+    <section class="py-12 bg-white border-y border-gray-100 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-4 mb-10">
+                <div class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center animate-pulse shadow-sm">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-gray-900 leading-none">Mtaa Activity Pulse</h3>
+                    <p class="text-sm text-gray-500 mt-1">Real-time connections in your community</p>
+                </div>
+            </div>
 
-                 <a href="{{ route('search.index') }}?service=5" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all text-center group">
-                    <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach($recentActivity as $activity)
+                    <div class="bg-gray-50/50 p-5 rounded-3xl border border-gray-100 flex items-center gap-4 hover:shadow-xl hover:bg-white transition-all transform hover:-translate-y-1 group">
+                        <div class="relative flex-shrink-0">
+                            @if($activity->worker->avatar)
+                                <img src="{{ asset('storage/' . $activity->worker->avatar) }}" class="w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-sm group-hover:scale-110 transition-transform">
+                            @else
+                                <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform">
+                                    {{ substr($activity->worker->name, 0, 1) }}
+                                </div>
+                            @endif
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></div>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black text-teal-600 uppercase tracking-widest leading-none mb-1">
+                                {{ $activity->worker->workerProfile->service->name }}
+                            </p>
+                            <h4 class="text-sm font-bold text-gray-900 truncate">
+                                {{ $activity->worker->name }} <span class="text-gray-400 font-normal">was just</span> 
+                                @if($activity->status === 'completed')
+                                    <span class="text-blue-600 font-black italic">Hired & Paid</span>
+                                @else
+                                    <span class="text-indigo-600 font-black italic">Hired</span>
+                                @endif
+                            </h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{{ $activity->worker->workerProfile->ward }}</span>
+                                <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                <span class="text-[10px] text-gray-500 italic">{{ $activity->updated_at->diffForHumans() }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <span class="font-semibold text-gray-700 group-hover:text-blue-600">Electrical</span>
-                </a>
-
-                 <a href="{{ route('search.index') }}?service=4" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-200 transition-all text-center group">
-                    <div class="w-12 h-12 mx-auto bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <span class="font-semibold text-gray-700 group-hover:text-indigo-600">Plumbing</span>
-                </a>
-
-                 <a href="{{ route('search.index') }}?service=8" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-pink-200 transition-all text-center group">
-                    <div class="w-12 h-12 mx-auto bg-pink-50 text-pink-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                    </div>
-                    <span class="font-semibold text-gray-700 group-hover:text-pink-600">Elderly Care</span>
-                </a>
-
-                 <a href="{{ route('search.index') }}?service=2" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-200 transition-all text-center group">
-                    <div class="w-12 h-12 mx-auto bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
-                    <span class="font-semibold text-gray-700 group-hover:text-purple-600">Tutoring</span>
-                </a>
-
-                 <a href="{{ route('search.index') }}?service=9" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-orange-200 transition-all text-center group">
-                    <div class="w-12 h-12 mx-auto bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    </div>
-                    <span class="font-semibold text-gray-700 group-hover:text-orange-600">View All</span>
-                </a>
+                @endforeach
             </div>
         </div>
     </section>
+    @endif
 
     <!-- How It Works & Stats -->
     <section class="py-24 bg-white relative overflow-hidden" id="how-it-works">
