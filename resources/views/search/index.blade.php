@@ -74,9 +74,25 @@
                 </div>
             </div>
 
-            <!-- Results Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @forelse($profiles as $p)
+            <!-- View Toggle & Results Grid -->
+            <div class="lg:col-span-3" x-data="{ view: 'grid' }">
+                <div class="flex items-center justify-between mb-6">
+                    <p class="text-sm text-gray-500 font-medium">Found <span class="text-gray-900 font-bold">{{ $profiles->total() }}</span> verified professionals</p>
+                    
+                    <div class="flex items-center gap-2 p-1 bg-gray-100/80 rounded-xl">
+                        <button @click="view = 'grid'" :class="view === 'grid' ? 'bg-white shadow-sm text-teal-600' : 'text-gray-500 hover:text-gray-700'" class="px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h11"></path></svg>
+                            List
+                        </button>
+                        <button @click="view = 'map'; setTimeout(() => initMap(), 100)" :class="view === 'map' ? 'bg-white shadow-sm text-teal-600' : 'text-gray-500 hover:text-gray-700'" class="px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A2 2 0 013 15.382V6.618a2 2 0 011.106-1.789L9 2l5.447 2.724A2 2 0 0115 6.618v8.764a2 2 0 01-1.106 1.789L9 20z"></path></svg>
+                            Map
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="view === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @forelse($profiles as $p)
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group relative">
                         <!-- Favorite Badge (Top Right) -->
                         @auth
@@ -160,12 +176,58 @@
                         <h3 class="text-lg font-medium text-gray-900">No workers found........</h3>
                         <p class="text-gray-500">Try adjusting your location filters or search for a different service...</p>
                     </div>
-                @endforelse
-            </div>
+                </div>
 
-            <div class="mt-8">
-                {{ $profiles->links() }}
+                <!-- Map View Container -->
+                <div x-show="view === 'map'" x-cloak class="bg-white rounded-3xl overflow-hidden border border-gray-100 h-[600px] shadow-2xl relative">
+                    <div id="search-map" class="w-full h-full z-0"></div>
+                </div>
+
+                <div class="mt-8">
+                    {{ $profiles->links() }}
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Map Scripts -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let searchMap;
+        function initMap() {
+            if (searchMap) return;
+            
+            searchMap = L.map('search-map').setView([-6.7924, 39.2083], 12);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(searchMap);
+
+            // Pass profiles data from Blade to JS
+            const profiles = @json($profiles->items());
+            const bounds = [];
+
+            profiles.forEach(p => {
+                if (p.latitude && p.longitude) {
+                    const marker = L.marker([p.latitude, p.longitude]).addTo(searchMap);
+                    
+                    const popupContent = `
+                        <div class="p-2 min-w-[150px]">
+                            <h4 class="font-bold text-gray-900 mb-1">${p.user.name}</h4>
+                            <p class="text-[10px] text-teal-600 font-extrabold uppercase tracking-widest mb-2">${p.service ? p.service.name : 'Professional'}</p>
+                            <a href="/worker/${p.user.id}" class="block w-full text-center py-1.5 bg-gray-900 text-white text-[10px] font-bold rounded-lg uppercase">View Profile</a>
+                        </div>
+                    `;
+                    
+                    marker.bindPopup(popupContent);
+                    bounds.push([p.latitude, p.longitude]);
+                }
+            });
+
+            if (bounds.length > 0) {
+                searchMap.fitBounds(bounds, { padding: [50, 50] });
+            }
+        }
+    </script>
 </x-app-layout>

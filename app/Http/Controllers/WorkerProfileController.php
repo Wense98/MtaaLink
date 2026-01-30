@@ -56,6 +56,8 @@ class WorkerProfileController extends Controller
             'district' => ['required', 'string', 'max:255'],
             'ward' => ['required', 'string', 'max:255'],
             'street' => ['required', 'string', 'max:255'],
+            'latitude' => ['nullable', 'numeric'],
+            'longitude' => ['nullable', 'numeric'],
         ]);
 
         $profile = $user->workerProfile;

@@ -93,7 +93,49 @@
                                         <x-input-error class="mt-2" :messages="$errors->get('street')" />
                                     </div>
                                 </div>
+
+                                <!-- Map Picker -->
+                                <div class="mt-4">
+                                    <x-input-label :value="__('Pin your location on Map (Optional)')" />
+                                    <p class="text-xs text-gray-500 mb-2 italic">Drag the marker to your exact location in your Mtaa.</p>
+                                    <div id="map" class="h-64 rounded-xl border border-gray-200 shadow-inner z-0"></div>
+                                    <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $profile->latitude) }}">
+                                    <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $profile->longitude) }}">
+                                    <x-input-error class="mt-2" :messages="$errors->get('latitude')" />
+                                </div>
                             </div>
+
+                            <!-- Map Scripts -->
+                            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const defaultLat = {{ $profile->latitude ?? -6.7924 }};
+                                    const defaultLon = {{ $profile->longitude ?? 39.2083 }};
+                                    
+                                    const map = L.map('map').setView([defaultLat, defaultLon], 13);
+                                    
+                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                        attribution: '© OpenStreetMap contributors'
+                                    }).addTo(map);
+
+                                    const marker = L.marker([defaultLat, defaultLon], {
+                                        draggable: true
+                                    }).addTo(map);
+
+                                    marker.on('dragend', function(event) {
+                                        const position = marker.getLatLng();
+                                        document.getElementById('latitude').value = position.lat;
+                                        document.getElementById('longitude').value = position.lng;
+                                    });
+
+                                    map.on('click', function(e) {
+                                        marker.setLatLng(e.latlng);
+                                        document.getElementById('latitude').value = e.latlng.lat;
+                                        document.getElementById('longitude').value = e.latlng.lng;
+                                    });
+                                });
+                            </script>
 
                             <!-- Portfolio Section -->
                             <div class="border-t pt-4 mt-6">
