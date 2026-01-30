@@ -89,6 +89,7 @@ Route::get('/worker/{id}', [\App\Http\Controllers\WorkerProfileController::class
 Route::post('/worker/{id}/review', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
 Route::post('/worker/{id}/request', [\App\Http\Controllers\ServiceRequestController::class, 'store'])->name('requests.store')->middleware('auth');
 Route::patch('/requests/{id}/status', [\App\Http\Controllers\ServiceRequestController::class, 'updateStatus'])->name('requests.update-status')->middleware('auth');
+Route::post('/requests/{id}/accept-quote', [\App\Http\Controllers\ServiceRequestController::class, 'acceptQuote'])->name('requests.accept-quote')->middleware('auth');
 
 // Chat System
 Route::middleware(['auth'])->group(function () {

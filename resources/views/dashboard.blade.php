@@ -117,6 +117,56 @@
                             </a>
                         </div>
                     </div>
+
+                    <!-- Activity Trends Chart -->
+                    <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border border-gray-100">
+                         <h4 class="font-bold text-lg text-gray-900 dark:text-gray-100 italic mb-4">Service Interest (Last 7 Days)</h4>
+                         <div class="h-48">
+                            <canvas id="requestsChart"></canvas>
+                         </div>
+                         
+                         @php
+                            $labels = [];
+                            $data = [];
+                            for($i = 6; $i >= 0; $i--) {
+                                $date = now()->subDays($i)->format('Y-m-d');
+                                $labels[] = now()->subDays($i)->format('D');
+                                $data[] = Auth::user()->receivedRequests()->whereDate('created_at', $date)->count();
+                            }
+                         @endphp
+                         
+                         <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const ctx = document.getElementById('requestsChart').getContext('2d');
+                                new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: {!! json_encode($labels) !!},
+                                        datasets: [{
+                                            label: 'Requests',
+                                            data: {!! json_encode($data) !!},
+                                            borderColor: '#0d9488',
+                                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                                            fill: true,
+                                            tension: 0.4,
+                                            borderWidth: 3,
+                                            pointRadius: 4,
+                                            pointBackgroundColor: '#0d9488'
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: { legend: { display: false } },
+                                        scales: {
+                                            y: { beginAtZero: true, grid: { display: false }, ticks: { stepSize: 1, font: { size: 10 } } },
+                                            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                                        }
+                                    }
+                                });
+                            });
+                         </script>
+                    </div>
                     
                     <!-- Market Intelligence -->
                     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 flex flex-col justify-between border border-gray-100">
@@ -225,27 +275,44 @@
                                                     {{ ucfirst($request->status) }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" x-data="{ quoting: false }">
                                                 @if($request->status === 'pending')
-                                                    <form action="{{ route('requests.update-status', $request->id) }}" method="POST" class="inline">
-                                                        @csrf @method('PATCH')
-                                                        <input type="hidden" name="status" value="accepted">
-                                                        <button type="submit" class="text-green-600 hover:text-green-900 mr-2 font-bold">Accept</button>
-                                                    </form>
-                                                    <form action="{{ route('requests.update-status', $request->id) }}" method="POST" class="inline">
-                                                        @csrf @method('PATCH')
-                                                        <input type="hidden" name="status" value="rejected">
-                                                        <button type="submit" class="text-red-500 hover:text-red-700 font-bold">Reject</button>
-                                                    </form>
+                                                    <div x-show="!quoting" class="flex items-center gap-2">
+                                                        <button @click="quoting = true" class="text-teal-600 hover:text-teal-900 font-bold">Accept & Quote</button>
+                                                        <span class="text-gray-300">|</span>
+                                                        <form action="{{ route('requests.update-status', $request->id) }}" method="POST" class="inline">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status" value="rejected">
+                                                            <button type="submit" class="text-red-500 hover:text-red-700 font-bold">Reject</button>
+                                                        </form>
+                                                    </div>
+
+                                                    <!-- Quote Form (Inline) -->
+                                                    <div x-show="quoting" x-cloak class="bg-gray-50 p-3 rounded-xl border border-teal-100 animate-fade-in">
+                                                        <form action="{{ route('requests.update-status', $request->id) }}" method="POST">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status" value="accepted">
+                                                            <div class="space-y-2">
+                                                                <input type="number" name="price_estimate" placeholder="Price (TZS)" class="w-full text-xs rounded-lg border-gray-200 py-1.5 focus:ring-teal-500" required>
+                                                                <textarea name="worker_notes" placeholder="Notes (optional)" class="w-full text-[10px] rounded-lg border-gray-200 py-1.5 focus:ring-teal-500" rows="2"></textarea>
+                                                                <div class="flex justify-end gap-2">
+                                                                    <button type="button" @click="quoting = false" class="text-[10px] font-bold text-gray-400">Cancel</button>
+                                                                    <button type="submit" class="text-[10px] font-black uppercase tracking-widest bg-teal-600 text-white px-3 py-1 rounded-lg">Send Quote</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 @elseif($request->status === 'accepted')
-                                                     <form action="{{ route('requests.update-status', $request->id) }}" method="POST" class="inline">
-                                                        @csrf @method('PATCH')
-                                                        <input type="hidden" name="status" value="completed">
-                                                        <button type="submit" class="text-teal-600 hover:text-teal-900 font-bold">Complete Job</button>
-                                                    </form>
-                                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $request->user->phone) }}" target="_blank" class="ml-2 text-green-500 hover:scale-110 transition-transform inline-block">
-                                                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                                                    </a>
+                                                     <div class="flex items-center gap-3">
+                                                        <form action="{{ route('requests.update-status', $request->id) }}" method="POST" class="inline">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status" value="completed">
+                                                            <button type="submit" class="text-teal-600 hover:text-teal-900 font-bold">Complete Job</button>
+                                                        </form>
+                                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $request->user->phone) }}" target="_blank" class="text-green-500 hover:scale-110 transition-transform">
+                                                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                                                        </a>
+                                                     </div>
                                                 @else
                                                     <span class="text-gray-400">Closed</span>
                                                 @endif
@@ -432,19 +499,46 @@
                          <div class="space-y-4">
                             @forelse(Auth::user()->sentRequests()->with('worker')->latest()->get() as $req)
                                 <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div>
-                                        <p class="font-semibold text-gray-800 dark:text-gray-200">Request to {{ $req->worker->name }}</p>
-                                        <p class="text-sm text-gray-500">{{ $req->message }}</p>
-                                        <p class="text-xs text-gray-400 mt-1">Date: {{ $req->requested_date ? $req->requested_date->format('M d') : 'ASAP' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="px-2 py-1 text-xs font-bold rounded-full 
-                                            {{ $req->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                            {{ $req->status === 'accepted' ? 'bg-green-100 text-green-800' : '' }}
-                                            {{ $req->status === 'rejected' ? 'bg-red-100 text-red-800' : '' }}
-                                            {{ $req->status === 'completed' ? 'bg-gray-100 text-gray-800' : '' }}">
-                                            {{ ucfirst($req->status) }}
-                                        </span>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <p class="font-bold text-gray-900 dark:text-gray-100">Request to {{ $req->worker->name }}</p>
+                                            <span class="px-2 py-0.5 text-[10px] font-black uppercase rounded-full tracking-widest
+                                                {{ $req->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                                {{ $req->status === 'accepted' ? 'bg-green-100 text-green-800' : '' }}
+                                                {{ $req->status === 'rejected' ? 'bg-red-100 text-red-800' : '' }}
+                                                {{ $req->status === 'completed' ? 'bg-blue-100 text-blue-800' : '' }}">
+                                                {{ $req->status }}
+                                            </span>
+                                        </div>
+                                        <p class="text-sm text-gray-500 line-clamp-1 mb-2">{{ $req->message }}</p>
+                                        
+                                        @if($req->price_estimate)
+                                            <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl mb-3 animate-fade-in-up">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <span class="text-[10px] font-black text-teal-600 uppercase tracking-widest">Price Quote</span>
+                                                    <span class="text-sm font-black text-gray-900">TZS {{ number_format($req->price_estimate) }}</span>
+                                                </div>
+                                                @if($req->worker_notes)
+                                                    <p class="text-[10px] text-teal-700 italic">"{{ $req->worker_notes }}"</p>
+                                                @endif
+                                                
+                                                @if(session('status') === 'quote-accepted' && session('request_id') == $req->id)
+                                                    <div class="mt-2 text-[10px] font-bold text-green-600 flex items-center gap-1">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                        Quote Accepted
+                                                    </div>
+                                                @else
+                                                    <form action="{{ route('requests.accept-quote', $req->id) }}" method="POST" class="mt-2">
+                                                        @csrf
+                                                        <button type="submit" class="w-full py-1.5 bg-gray-900 text-white text-[10px] font-black uppercase rounded-lg hover:bg-teal-600 transition-colors shadow-sm">
+                                                            Accept Quote
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        <p class="text-[10px] text-gray-400 font-medium italic">Sent {{ $req->created_at->diffForHumans() }}</p>
                                     </div>
                                 </div>
                             @empty

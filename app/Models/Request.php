@@ -15,6 +15,9 @@ class Request extends Model
         'message',
         'image_path',
         'status',
+        'price_estimate',
+        'worker_notes',
+        'quoted_at',
         'requested_date',
     ];
 

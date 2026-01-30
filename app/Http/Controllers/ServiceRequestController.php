@@ -65,13 +65,48 @@ class ServiceRequestController extends Controller
 
         $request->validate([
             'status' => ['required', 'in:accepted,rejected,completed'],
+            'price_estimate' => ['nullable', 'numeric', 'min:0'],
+            'worker_notes' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $serviceRequest->update(['status' => $request->status]);
+        $updateData = ['status' => $request->status];
+        
+        if ($request->filled('price_estimate')) {
+            $updateData['price_estimate'] = $request->price_estimate;
+            $updateData['worker_notes'] = $request->worker_notes;
+            $updateData['quoted_at'] = now();
+        }
+
+        $serviceRequest->update($updateData);
 
         // Notify the customer
         $serviceRequest->user->notify(new \App\Notifications\RequestStatusUpdatedNotification($serviceRequest));
 
         return back()->with('status', 'request-updated');
+    }
+
+    /**
+     * Customer accepts the price estimate/quote.
+     */
+    public function acceptQuote($id)
+    {
+        $serviceRequest = ServiceRequest::findOrFail($id);
+
+        if (Auth::id() !== $serviceRequest->user_id) {
+            abort(403);
+        }
+
+        if ($serviceRequest->status !== 'accepted' || !$serviceRequest->price_estimate) {
+            return back()->withErrors(['error' => 'No active quote found to accept.']);
+        }
+
+        // We could add a 'quote_accepted' status or just a flag
+        // For now, let's just mark it as confirmed in the session or a new column
+        // But status 'accepted' is already enough if the UI shows the quote.
+        
+        return back()->with([
+            'status' => 'quote-accepted',
+            'request_id' => $id
+        ]);
     }
 }
