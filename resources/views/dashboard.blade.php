@@ -16,14 +16,43 @@
                 </div>
             </div>
 
-            @if(Auth::user()->role === 'worker')
-                <!-- Profile Completeness Warning -->
+                <!-- Profile Completeness & Performance -->
                 @php
                     $profile = Auth::user()->workerProfile;
-                    $isIncomplete = !$profile || !$profile->region || !$profile->district || !$profile->ward;
+                    $score = 0;
+                    if (Auth::user()->avatar) $score += 20;
+                    if ($profile->bio) $score += 20;
+                    if ($profile->region && $profile->district && $profile->ward) $score += 20;
+                    if ($profile->portfolioImages->count() > 0) $score += 20;
+                    if ($profile->price > 0) $score += 10;
+                    if ($profile->experience_years > 0) $score += 10;
+                    
+                    $isIncomplete = $score < 100;
                 @endphp
 
-                @if($isIncomplete)
+                <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-sm font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Profile Strength</h4>
+                            <p class="text-xs text-gray-500">Complete your profile to rank higher in search results.</p>
+                        </div>
+                        <span class="text-2xl font-black text-teal-600">{{ $score }}%</span>
+                    </div>
+                    <div class="w-full h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-teal-500 to-blue-600 transition-all duration-1000 shadow-[0_0_10px_rgba(20,184,166,0.3)]" style="width: {{ $score }}%"></div>
+                    </div>
+                    
+                    @if($isIncomplete)
+                        <div class="mt-4 flex flex-wrap gap-2">
+                             @if(!Auth::user()->avatar) <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-bold rounded-lg border border-amber-100">+ Add Photo</span> @endif
+                             @if(!$profile->bio) <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-bold rounded-lg border border-amber-100">+ Write Bio</span> @endif
+                             @if($profile->portfolioImages->count() == 0) <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-bold rounded-lg border border-amber-100">+ Add Portfolio</span> @endif
+                             <a href="{{ route('worker-profile.edit') }}" class="text-[10px] font-black text-teal-600 underline ml-auto">Finish Now &rarr;</a>
+                        </div>
+                    @endif
+                </div>
+
+                @if($isIncomplete && $score < 60)
                     <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-xl shadow-sm mb-6 animate-pulse">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -35,7 +64,7 @@
                                 <p class="text-sm text-amber-700 font-bold">
                                     Profile Yako Haijakamilika!
                                     <span class="font-medium block md:inline mt-1 md:mt-0 text-amber-600">
-                                        Baadhi ya taarifa za eneo lako (Mkoa, Wilaya) hazipo. Tafadhali zikamilishe ili wateja waweze kukuona.
+                                        Wateja wanaamini zaidi wahudumu wenye taarifa kamili. Tafadhali kamilisha profile yako sasa.
                                     </span>
                                 </p>
                             </div>
