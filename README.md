@@ -1,1 +1,42 @@
-https://www.kazilink.co.tz/   i want u to read this application and i want u to build for me yhe application like this mostly i like its style and everything but my system will be focusing mostly on connect user with peaople who doing social works  i thing u understand me brother lets create this masteriece to help tanzania society to fing social work kwenye kila mtaa wao kwenye mikoa yote
+# MtaaLink 🇹🇿
+
+MtaaLink ni mfumo wa kisasa wa kidijitali ulioundwa kuwaunganisha watanzania na mafundi/wahudumu wa kazi za kijamii (Social Workers) kwenye kila mtaa, mkoa, na wilaya.
+
+## 🌟 Vipengele Muhimu (Key Features)
+
+*   **Tafuta Mafundi (Find Workers)**: Tafuta mafundi kulingana na mtaa wako, aina ya huduma, au uzoefu.
+*   **Mfumo wa Kuchati (Real-time Messaging)**: Ongea na mhudumu moja kwa moja ndani ya mfumo ili kukubaliana bei na maelezo ya kazi.
+*   **Maombi ya Kazi na Picha (Service Requests with Photos)**: Tuma maombi ya kazi ukiwa umeambatanisha picha ya tatizo ili mhudumu aone kabla ya kuja.
+*   **Uthibitisho wa Kazi (Proof of Work)**: Wateja wanaweza kuacha maoni (Reviews) yakiwa na picha za kazi iliyokamilika kwa ajili ya kuongeza uaminifu.
+*   **Wasifu wa Wahudumu (Worker Profiles)**: Kila mhudumu ana wasifu unaoonyesha uzoefu wake, picha za kazi zake (Portfolio), na maoni kutoka kwa wateja wengine.
+*   **Uhakiki wa Wahudumu (ID Verification)**: Wahudumu wote wanakaguliwa vitambulisho na vyeti vya usalama (Police Clearance) na Admin.
+
+## 🛠 Teknolojia Iliyotumika (Tech Stack)
+
+*   **Framework**: Laravel 11
+*   **Frontend**: Tailwind CSS & Alpine.js
+*   **Database**: MySQL
+*   **Authentication**: Laravel Breeze
+
+## 🚀 Jinsi ya Kuanza (Installation)
+
+1. Clone repository hii:
+   ```bash
+   git clone https://github.com/wense98/MtaaLink.git
+   ```
+2. Sakinisha dependencies ya PHP:
+   ```bash
+   composer install
+   ```
+3. Sakinisha dependencies ya Node:
+   ```bash
+   npm install && npm run dev
+   ```
+4. Nakili `.env.example` kwenda `.env` na uweke maelezo ya Database yako.
+5. Run migrations:
+   ```bash
+   php artisan migrate
+   ```
+
+---
+*MtaaLink - Unganishwa na huduma bora mahali ulipo!*
