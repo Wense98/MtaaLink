@@ -46,7 +46,20 @@
 
             <!-- Location Fields (Only for Workers) -->
             <div x-show="role === 'worker'" x-transition class="space-y-4 pt-2 border-t border-gray-100 mt-4">
-                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Location Information (Worker Only)</p>
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Professional Information (Worker Only)</p>
+                
+                <div>
+                    <x-input-label for="service_id" :value="__('Specialization / Profession')" />
+                    <select id="service_id" name="service_id" class="block mt-1 w-full rounded-xl border-gray-200 bg-gray-50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 transition-all font-medium py-2.5">
+                        <option value="">Select your profession</option>
+                        @foreach($services as $service)
+                            <option value="{{ $service->id }}" @selected(old('service_id') == $service->id)>{{ $service->name }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('service_id')" class="mt-2" />
+                </div>
+
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 pt-2">Location Information</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="region" :value="__('Region (Mkoa)')" />

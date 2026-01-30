@@ -19,7 +19,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $services = \App\Models\Service::orderBy('name')->get();
+        return view('auth.register', compact('services'));
     }
 
     /**
@@ -35,6 +36,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone' => ['required', 'string', 'max:30', 'unique:users,phone'],
             'role' => ['required', 'in:'.User::ROLE_CUSTOMER.','.User::ROLE_WORKER],
+            'service_id' => ['required_if:role,worker', 'nullable', 'exists:services,id'],
             'region' => ['required_if:role,worker', 'nullable', 'string', 'max:100'],
             'district' => ['required_if:role,worker', 'nullable', 'string', 'max:100'],
             'ward' => ['required_if:role,worker', 'nullable', 'string', 'max:100'],
@@ -53,6 +55,7 @@ class RegisteredUserController extends Controller
         if ($user->role === User::ROLE_WORKER) {
             $data = [
                 'user_id' => $user->id,
+                'service_id' => $request->service_id,
                 'region' => $request->region,
                 'district' => $request->district,
                 'ward' => $request->ward,

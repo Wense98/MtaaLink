@@ -1,10 +1,10 @@
 # MtaaLink 🇹🇿
 
-MtaaLink ni mfumo wa kisasa wa kidijitali ulioundwa kuwaunganisha watanzania na mafundi/wahudumu wa kazi za kijamii (Social Workers) kwenye kila mtaa, mkoa, na wilaya.
+MtaaLink ni mfumo wa kisasa wa kidijitali ulioundwa kuwaunganisha watanzania na wataalamu wa huduma za kijamii na kitaalamu (Social Workers & Professionals) kwenye kila mtaa, mkoa, na wilaya. Hii inajumuisha fani mbalimbali kama Walimu wa ziada, Washauri (Counselors), Wauguzi, mafundi, na wahudumu wengine muhimu.
 
 ## 🌟 Vipengele Muhimu (Key Features)
 
-*   **Tafuta Mafundi (Find Workers)**: Tafuta mafundi kulingana na mtaa wako, aina ya huduma, au uzoefu.
+*   **Tafuta Wataalamu (Find Professionals)**: Tafuta wataalamu kulingana na mtaa wako, aina ya taaluma, au uzoefu.
 *   **Mfumo wa Kuchati (Real-time Messaging)**: Ongea na mhudumu moja kwa moja ndani ya mfumo ili kukubaliana bei na maelezo ya kazi.
 *   **Maombi ya Kazi na Picha (Service Requests with Photos)**: Tuma maombi ya kazi ukiwa umeambatanisha picha ya tatizo ili mhudumu aone kabla ya kuja.
 *   **Uthibitisho wa Kazi (Proof of Work)**: Wateja wanaweza kuacha maoni (Reviews) yakiwa na picha za kazi iliyokamilika kwa ajili ya kuongeza uaminifu.
