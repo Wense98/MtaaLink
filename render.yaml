@@ -27,9 +27,3 @@ services:
         fromValue: ${DB_PASSWORD}
       - key: NODE_VERSION
         value: 18.0.0
-
-databases:
-  - name: mtaalink_db
-    databaseName: mtaalink
-    user: mtaalink_user
-    plan: free
