@@ -9,17 +9,7 @@ use Illuminate\Http\Request;
 
 class WorkerController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        // inline admin check to avoid kernel edits
-        $this->middleware(function ($request, $next) {
-            if (! $request->user() || $request->user()->role !== User::ROLE_ADMIN) {
-                abort(403);
-            }
-            return $next($request);
-        });
-    }
+
 
     public function index()
     {

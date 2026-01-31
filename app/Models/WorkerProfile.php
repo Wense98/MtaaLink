@@ -78,6 +78,20 @@ class WorkerProfile extends Model
             ];
         }
 
+        // Escrow Trusted Badge (New)
+        $completedTx = \App\Models\Transaction::where('worker_id', $this->user_id)
+            ->where('status', 'released')
+            ->exists();
+            
+        if ($completedTx) {
+            $badges[] = [
+                'name' => 'Escrow Trusted',
+                'description' => 'Has successfully completed payments via Mtaa Pay',
+                'icon' => 'shield-check',
+                'color' => 'emerald'
+            ];
+        }
+
         return $badges;
     }
 

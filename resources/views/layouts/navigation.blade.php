@@ -12,14 +12,22 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                @auth
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                @endauth
 
-                    <x-nav-link :href="route('search.index')" :active="request()->routeIs('search.index')">
-                        {{ __('Search') }}
-                    </x-nav-link>
+                <x-nav-link :href="route('search.index')" :active="request()->routeIs('search.index')">
+                    {{ __('Search') }}
+                </x-nav-link>
 
+                <x-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.*')">
+                    {{ __('Mtaa Market') }}
+                    <span class="ms-1.5 px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-black rounded-full animate-pulse uppercase">New</span>
+                </x-nav-link>
+
+                @auth
                     <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')">
                         {{ __('Messages') }}
                         @php
@@ -34,6 +42,13 @@
                         @endif
                     </x-nav-link>
 
+                    @if(Auth::user()->role !== 'admin')
+                        <x-nav-link :href="route('chat.support')" :active="request()->routeIs('chat.support')">
+                            {{ __('Support') }}
+                        </x-nav-link>
+                    @endif
+                @endauth
+
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <x-nav-link :href="route('admin.workers.index')" :active="request()->routeIs('admin.workers.*')">
@@ -42,6 +57,12 @@
                             <x-nav-link :href="route('admin.services.index')" :active="request()->routeIs('admin.services.*')">
                                 {{ __('Services') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('admin.jobs.index')" :active="request()->routeIs('admin.jobs.*')">
+                                {{ __('Jobs') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
+                                {{ __('Payments') }}
+                            </x-nav-link>
                         @endif
                     @endauth
                 </div>
@@ -49,7 +70,36 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Language Switcher -->
+                <div class="flex items-center sm:ms-2 mr-4">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                                    <span class="uppercase">{{ session('locale', 'en') }}</span>
+                                </div>
+                                <div class="ms-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('lang.switch', 'en')">
+                                {{ __('English') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('lang.switch', 'sw')">
+                                {{ __('Swahili') }}
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
+                </div>
+
                 @auth
+
                     <!-- Notification Bell -->
                     <x-dropdown align="right" width="80">
                         <x-slot name="trigger">
@@ -149,17 +199,37 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+            @auth
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @endauth
+            
+            <x-responsive-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.index')">
+                {{ __('Mtaa Market') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')">
-                {{ __('Messages') }}
-                @if($totalUnread > 0)
-                    <span class="ms-1 bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
-                        {{ $totalUnread }}
-                    </span>
+            
+            @auth
+                @if(Auth::user()->role === 'customer')
+                    <x-responsive-nav-link :href="route('jobs.my-jobs')" :active="request()->routeIs('jobs.my-jobs')">
+                        {{ __('My Postings') }}
+                    </x-responsive-nav-link>
                 @endif
-            </x-responsive-nav-link>
+                
+                <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')">
+                    {{ __('Messages') }}
+                    @php
+                        $totalUnread = \App\Models\Message::where('receiver_id', Auth::id())
+                            ->where('is_read', false)
+                            ->count();
+                    @endphp
+                    @if($totalUnread > 0)
+                        <span class="ms-1 bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                            {{ $totalUnread }}
+                        </span>
+                    @endif
+                </x-responsive-nav-link>
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->
@@ -171,6 +241,12 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
+                    <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-gray-700 mb-2">Language / Lugha</div>
+                    <div class="flex px-4 gap-4 mb-4">
+                        <a href="{{ route('lang.switch', 'en') }}" class="text-sm {{ session('locale', 'en') === 'en' ? 'font-black text-teal-600' : 'text-gray-500' }}">EN</a>
+                        <a href="{{ route('lang.switch', 'sw') }}" class="text-sm {{ session('locale') === 'sw' ? 'font-black text-teal-600' : 'text-gray-500' }}">SW</a>
+                    </div>
+
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
@@ -188,6 +264,12 @@
                 </div>
             @else
                 <div class="mt-3 space-y-1">
+                    <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-gray-700 mb-2">Language / Lugha</div>
+                    <div class="flex px-4 gap-4 mb-4">
+                        <a href="{{ route('lang.switch', 'en') }}" class="text-sm {{ session('locale', 'en') === 'en' ? 'font-black text-teal-600' : 'text-gray-500' }}">EN</a>
+                        <a href="{{ route('lang.switch', 'sw') }}" class="text-sm {{ session('locale') === 'sw' ? 'font-black text-teal-600' : 'text-gray-500' }}">SW</a>
+                    </div>
+                    
                     <x-responsive-nav-link :href="route('login')">
                         {{ __('Log in') }}
                     </x-responsive-nav-link>

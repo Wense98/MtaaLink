@@ -75,4 +75,22 @@ class ChatController extends Controller
 
         return back();
     }
+
+    /**
+     * Redirect to chat with an admin.
+     */
+    public function support()
+    {
+        $admin = User::where('role', 'admin')->first();
+        
+        if (!$admin) {
+            return back()->with('error', 'Support is currently unavailable.');
+        }
+
+        if ($admin->id === Auth::id()) {
+            return redirect()->route('chat.index')->with('status', 'You are the administrator.');
+        }
+
+        return redirect()->route('chat.show', $admin->id);
+    }
 }

@@ -1,12 +1,10 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Manage Services') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+@section('title','Manage Services')
+
+@section('content')
+  <div class="py-6">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
                 <!-- Add New Service Form -->
@@ -64,11 +62,11 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $service->slug }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                    {{ $service->workers_count }}
+                                                    {{ $service->worker_profiles_count }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                @if($service->workers_count == 0)
+                                                @if($service->worker_profiles_count == 0)
                                                     <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                                         @csrf
                                                         @method('DELETE')
@@ -95,4 +93,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

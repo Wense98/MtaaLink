@@ -82,7 +82,7 @@
                     </p>
 
                     <!-- Hero Search Box -->
-                    <form action="{{ route('search.index') }}" method="GET" class="bg-white p-2 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col sm:flex-row gap-2 max-w-xl mb-8 group focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
+                    <form action="{{ route('search.index') }}" method="GET" class="bg-white p-2 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col sm:flex-row gap-2 max-w-xl mb-6 group focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
                         <div class="flex-[1.5] relative">
                             <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             <input type="text" name="query" placeholder="What help do you need?" class="w-full pl-10 pr-4 py-3 border-none rounded-xl focus:ring-0 text-gray-900 placeholder-gray-500 bg-transparent">
@@ -96,6 +96,17 @@
                             Find Help
                         </button>
                     </form>
+
+                    <div class="flex items-center gap-4 mb-10">
+                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Or try</p>
+                        <a href="{{ route('jobs.create') }}" class="text-xs font-black text-teal-600 hover:text-teal-700 uppercase tracking-widest flex items-center gap-2 group">
+                            <span class="px-2 py-1 bg-teal-50 rounded-lg group-hover:bg-teal-100 transition-colors">Posting a Job</span>
+                        </a>
+                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <a href="{{ route('jobs.index') }}" class="text-xs font-black text-indigo-600 hover:text-indigo-700 uppercase tracking-widest flex items-center gap-2 group">
+                            <span class="px-2 py-1 bg-indigo-50 rounded-lg group-hover:bg-indigo-100 transition-colors">Mtaa Market</span>
+                        </a>
+                    </div>
 
                     <!-- Trust Indicators -->
                     <div class="flex items-center gap-8 animate-fade-in delay-500">

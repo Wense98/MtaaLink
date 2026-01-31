@@ -1,42 +1,58 @@
-# MtaaLink 🇹🇿
+# MtaaLink™ - Neighborhood Service Marketplace
 
-MtaaLink ni mfumo wa kisasa wa kidijitali ulioundwa kuwaunganisha watanzania na wataalamu wa huduma za kijamii na kitaalamu (Social Workers & Professionals) kwenye kila mtaa, mkoa, na wilaya. Hii inajumuisha fani mbalimbali kama Walimu wa ziada, Washauri (Counselors), Wauguzi, mafundi, na wahudumu wengine muhimu.
+MtaaLink is a premium, localized service marketplace designed for the Tanzanian market. It connects skilled workers (fundis, cleaners, technicians) with customers in their neighborhoods (Mitaa), featuring a secure escrow payment system (Mtaa Pay™), real-time chats, and a trust-based review system.
 
-## 🌟 Vipengele Muhimu (Key Features)
+## 🚀 Key Features
 
-*   **Tafuta Wataalamu (Find Professionals)**: Tafuta wataalamu kulingana na mtaa wako, aina ya taaluma, au uzoefu.
-*   **Mfumo wa Kuchati (Real-time Messaging)**: Ongea na mhudumu moja kwa moja ndani ya mfumo ili kukubaliana bei na maelezo ya kazi.
-*   **Maombi ya Kazi na Picha (Service Requests with Photos)**: Tuma maombi ya kazi ukiwa umeambatanisha picha ya tatizo ili mhudumu aone kabla ya kuja.
-*   **Uthibitisho wa Kazi (Proof of Work)**: Wateja wanaweza kuacha maoni (Reviews) yakiwa na picha za kazi iliyokamilika kwa ajili ya kuongeza uaminifu.
-*   **Wasifu wa Wahudumu (Worker Profiles)**: Kila mhudumu ana wasifu unaoonyesha uzoefu wake, picha za kazi zake (Portfolio), na maoni kutoka kwa wateja wengine.
-*   **Uhakiki wa Wahudumu (ID Verification)**: Wahudumu wote wanakaguliwa vitambulisho na vyeti vya usalama (Police Clearance) na Admin.
+- **Mtaa Pay™ Protection**: Secure escrow system where funds are held until the job is confirmed.
+- **Mtaa Pulse™**: Live neighborhood activity feed showing local hires and community engagement.
+- **Mtaa Shield™**: Integrated verification system for workers, including background checks and portfolio audits.
+- **Real-time Chat**: Direct communication between customers and pros.
+- **Marketplace (Mtaa Market)**: Customers can post public jobs for workers to bid on.
+- **Support Centre**: Direct support line for users to contact platform administrators.
+- **Dual Language Support**: Full experience in both English and Swahili.
 
-## 🛠 Teknolojia Iliyotumika (Tech Stack)
+## 🛠️ Technology Stack
 
-*   **Framework**: Laravel 11
-*   **Frontend**: Tailwind CSS & Alpine.js
-*   **Database**: MySQL
-*   **Authentication**: Laravel Breeze
+- **Backend**: Laravel 12.x
+- **Frontend**: Blade, Alpine.js, Tailwind CSS
+- **Database**: MySQL / PostgreSQL
+- **Payments**: Integrated Escrow Simulation (Mpesa, Tigopesa, etc.)
+- **Security**: Role-based Access Control (Admin, Worker, Customer)
 
-## 🚀 Jinsi ya Kuanza (Installation)
+## 📦 Installation
 
-1. Clone repository hii:
+1. **Clone the repository**:
    ```bash
-   git clone https://github.com/wense98/MtaaLink.git
+   git clone https://github.com/yourusername/mtaalink.git
+   cd mtaalink
    ```
-2. Sakinisha dependencies ya PHP:
+
+2. **Install dependencies**:
    ```bash
    composer install
-   ```
-3. Sakinisha dependencies ya Node:
-   ```bash
-   npm install && npm run dev
-   ```
-4. Nakili `.env.example` kwenda `.env` na uweke maelezo ya Database yako.
-5. Run migrations:
-   ```bash
-   php artisan migrate
+   npm install
    ```
 
+3. **Setup environment**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Run migrations & seeders**:
+   ```bash
+   php artisan migrate --seed
+   ```
+
+5. **Start the development server**:
+   ```bash
+   php artisan serve
+   npm run dev
+   ```
+
+## 🛡️ Admin Access
+To create an administrative user, you can run the provided script or use the `create_admin.php` utility.
+
 ---
-*MtaaLink - Unganishwa na huduma bora mahali ulipo!*
+Built with ❤️ by Antigravity for the MtaaLink Community.

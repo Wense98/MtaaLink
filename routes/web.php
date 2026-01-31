@@ -36,13 +36,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
-    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'readAll'])->name('notifications.readAll');
+    Route::get('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
 });
 
 require __DIR__.'/auth.php';
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/workers', [\App\Http\Controllers\Admin\WorkerController::class, 'index'])->name('workers.index');
     Route::get('/workers/{id}', [\App\Http\Controllers\Admin\WorkerController::class, 'show'])->name('workers.show');
     Route::post('/workers/{id}/verify', [\App\Http\Controllers\Admin\WorkerController::class, 'verify'])->name('workers.verify');
@@ -53,13 +53,28 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // Services Management
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class)->only(['index', 'store', 'destroy']);
     
-    // Notifications
-    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    // Job Board Management
+    Route::get('/jobs', [\App\Http\Controllers\Admin\JobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/{job}', [\App\Http\Controllers\Admin\JobController::class, 'show'])->name('jobs.show');
+    Route::delete('/jobs/{job}', [\App\Http\Controllers\Admin\JobController::class, 'destroy'])->name('jobs.destroy');
+    Route::post('/jobs/{job}/close', [\App\Http\Controllers\Admin\JobController::class, 'close'])->name('jobs.close');
+
+    // Transactions & Disputes
+    Route::get('/transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/disputes', [\App\Http\Controllers\Admin\TransactionController::class, 'disputes'])->name('transactions.disputes');
+    Route::post('/transactions/{transaction}/resolve', [\App\Http\Controllers\Admin\TransactionController::class, 'resolve'])->name('transactions.resolve');
 });
 
 // Public search
 Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
+
+// Locale Switcher
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'sw'])) {
+        session(['locale' => $locale]);
+    }
+    return back();
+})->name('lang.switch');
 
 // Subscriptions (workers)
 Route::middleware(['auth'])->group(function () {
@@ -97,4 +112,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
     Route::get('/messages/{id}', [\App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
     Route::post('/messages/{id}', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
+    Route::get('/support/chat', [\App\Http\Controllers\ChatController::class, 'support'])->name('chat.support');
+
+    // Public Job Board (Marketplace)
+    Route::get('/jobs', [\App\Http\Controllers\PublicJobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/create', [\App\Http\Controllers\PublicJobController::class, 'create'])->name('jobs.create');
+    Route::post('/jobs', [\App\Http\Controllers\PublicJobController::class, 'store'])->name('jobs.store');
+    Route::get('/jobs/my-jobs', [\App\Http\Controllers\PublicJobController::class, 'myJobs'])->name('jobs.my-jobs');
+    Route::get('/jobs/{job}', [\App\Http\Controllers\PublicJobController::class, 'show'])->name('jobs.show');
+    Route::post('/jobs/{job}/bid', [\App\Http\Controllers\PublicJobController::class, 'bid'])->name('jobs.bid');
+    Route::post('/bids/{bid}/accept', [\App\Http\Controllers\PublicJobController::class, 'acceptBid'])->name('jobs.accept-bid');
+    
+    // Wallet & Payments
+    Route::get('/wallet', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
+    Route::get('/pay/{request}', [\App\Http\Controllers\WalletController::class, 'showPayment'])->name('wallet.pay');
+    Route::post('/pay/{request}', [\App\Http\Controllers\WalletController::class, 'processPayment'])->name('wallet.process');
+    Route::post('/release-funds/{request}', [\App\Http\Controllers\WalletController::class, 'releaseFunds'])->name('wallet.release');
+    Route::post('/dispute/{transaction}', [\App\Http\Controllers\WalletController::class, 'openDispute'])->name('wallet.dispute');
 });

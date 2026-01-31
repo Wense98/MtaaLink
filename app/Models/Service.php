@@ -13,8 +13,13 @@ class Service extends Model
         'name', 'slug', 'description',
     ];
 
-    public function workers()
+    public function workerProfiles()
     {
         return $this->hasMany(WorkerProfile::class);
+    }
+
+    public function publicJobs()
+    {
+        return $this->hasMany(PublicJob::class);
     }
 }

@@ -96,4 +96,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(WorkerProfile::class, 'favorites', 'user_id', 'worker_profile_id')->withTimestamps();
     }
+
+    public function publicJobs()
+    {
+        return $this->hasMany(PublicJob::class);
+    }
+
+    public function jobBids()
+    {
+        return $this->hasMany(JobBid::class, 'worker_id');
+    }
 }

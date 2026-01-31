@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Laravel') }} - @yield('title')</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -20,18 +20,29 @@
             @include('layouts.navigation')
 
             <!-- Page Heading -->
-            @isset($header)
+            @hasSection('header')
+                <header class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        @yield('header')
+                    </div>
+                </header>
+            @elseif(isset($header))
                 <header class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
-            @endisset
+            @endif
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @yield('content')
+                {{ $slot ?? '' }}
             </main>
+
+            {{-- @include('components.footer') --}}
         </div>
+        @include('components.accessibility-helper')
+        @stack('scripts')
     </body>
 </html>

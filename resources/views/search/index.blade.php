@@ -1,11 +1,15 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Find Social Works') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
+@section('title','Find Social Workers')
+
+@section('header')
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Find Social Works') }}
+    </h2>
+@endsection
+
+@section('content')
+  <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
             <!-- Search & Filters Card -->
@@ -16,7 +20,7 @@
                             <!-- Keywords -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Keywords</label>
-                                <input type="text" name="q" placeholder="e.g. leaking, CCTV" value="{{ request('q') }}" class="w-full rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm text-sm" />
+                                <input type="text" name="query" value="{{ request('query') }}" placeholder="Search..." class="w-full rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm text-sm" />
                             </div>
 
                             <!-- Service Type -->
@@ -199,6 +203,28 @@
                                 </div>
                             </div>
 
+                            <!-- Achievement Badges -->
+                            @php $achievements = $p->getAchievements(); @endphp
+                            @if(count($achievements) > 0)
+                                <div class="flex items-center gap-1 mt-3 pt-3 border-t border-gray-100">
+                                    @foreach(array_slice($achievements, 0, 4) as $badge)
+                                        <div class="w-6 h-6 rounded-full bg-{{ $badge['color'] }}-50 flex items-center justify-center text-{{ $badge['color'] }}-600 border border-{{ $badge['color'] }}-100" title="{{ $badge['name'] }}">
+                                            @if($badge['icon'] === 'verified')
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                            @elseif($badge['icon'] === 'heart')
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                                            @elseif($badge['icon'] === 'star')
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                            @elseif($badge['icon'] === 'fire')
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.4503-.342c-.714.442-1.531.634-2.311.634-2.127 0-3.991-1.45-3.991-3.595 0-.671.223-1.302.618-1.81a1 1 0 00-.162-1.313 1.001 1.001 0 00-1.144-.133C2.808 2.146 1.906 3.559 1.906 5.176c0 3.299 2.492 5.925 5.538 5.925.79 0 1.553-.171 2.237-.49a1 1 0 00.538-.89 1 1 0 00-.63-.919c-.392-.156-.73-.43-1.002-.796 1.047-.033 2.044-.317 2.846-.826 1.517-.962 2.327-2.346 2.327-3.853 0-.62-.12-1.222-.34-1.783z" clip-rule="evenodd"></path></svg>
+                                            @elseif($badge['icon'] === 'shield-check')
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
                             @if($p->skills)
                                 <div class="mt-4 flex flex-wrap gap-1">
                                     @foreach(array_slice(explode(',', $p->skills), 0, 3) as $skill)
@@ -253,6 +279,9 @@
         </div>
     </div>
 
+@endsection
+
+@push('scripts')
     <!-- Map Scripts -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -293,4 +322,4 @@
             }
         }
     </script>
-</x-app-layout>
+@endpush

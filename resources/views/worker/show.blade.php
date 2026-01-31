@@ -1,11 +1,15 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ $user->name }}'s Profile
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
+@section('title', $user->name . "'s Profile")
+
+@section('header')
+    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        {{ $user->name }}'s Profile
+    </h2>
+@endsection
+
+@section('content')
+  <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -13,80 +17,82 @@
                 <!-- Left Column: Key Info -->
                 <div class="md:col-span-1 space-y-6">
                     <!-- Profile Card -->
-                    <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden text-center p-8 border border-gray-100 dark:border-gray-700 relative">
-                        <!-- Availability Badge -->
-                        <div class="absolute top-4 left-4">
-                            @if($user->workerProfile->is_available)
-                                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-100">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                                    Available
-                                </span>
-                            @else
-                                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 text-gray-500 text-xs font-bold border border-gray-100">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
-                                    Busy
-                                </span>
-                            @endif
-                        </div>
-
-                        <div class="w-32 h-32 mx-auto rounded-3xl bg-gray-100 border-4 border-white shadow-md flex items-center justify-center text-3xl font-bold text-gray-400 mb-6 overflow-hidden ring-1 ring-gray-100">
-                            @if($user->avatar)
-                                <img src="{{ asset('storage/' . $user->avatar) }}" class="w-full h-full object-cover">
-                            @else
-                                <span class="uppercase text-teal-600">{{ substr($user->name, 0, 1) }}</span>
-                            @endif
-                        </div>
-                        
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">{{ $user->name }}</h1>
-                        <p class="text-teal-600 font-bold text-sm uppercase tracking-wider mb-4">{{ $user->workerProfile->service->name ?? 'Social Worker' }}</p>
-                        
-                        @if($user->is_verified)
-                            <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-6">
-                                <svg class="w-4 h-4 mr-1.5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.64.304 1.24.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Pro Verified
+                        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden text-center p-8 border border-gray-100 dark:border-gray-700 relative">
+                            <!-- Availability Badge -->
+                            <div class="absolute top-4 left-4">
+                                @if($user->workerProfile->is_available)
+                                    <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-100">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                        Available
+                                    </span>
+                                @else
+                                    <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 text-gray-500 text-xs font-bold border border-gray-100">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                                        Busy
+                                    </span>
+                                @endif
                             </div>
-                        @endif
 
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <!-- WhatsApp Button -->
-                            @if($user->phone)
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->phone) }}" target="_blank" class="flex flex-col items-center justify-center py-3 bg-green-50 hover:bg-green-100 rounded-xl text-green-700 transition-all border border-green-100 group">
-                                    <svg class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                                    <span class="text-[10px] font-bold uppercase">WhatsApp</span>
-                                </a>
-                                <!-- Call Button -->
-                                <a href="tel:{{ $user->phone }}" class="flex flex-col items-center justify-center py-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-700 transition-all border border-blue-100 group">
-                                    <svg class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                    <span class="text-[10px] font-bold uppercase">Call Me</span>
-                                </a>
+                            <div class="mb-6">
+                                <div class="mx-auto w-24 h-24 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-4xl font-black overflow-hidden border border-teal-100">
+                                    @if($user->workerProfile->avatar_path)
+                                        <img src="{{ asset('storage/' . $user->workerProfile->avatar_path) }}" alt="{{ $user->name }} avatar" class="w-full h-full object-cover">
+                                    @else
+                                        <span class="uppercase text-teal-600">{{ substr($user->name, 0, 1) }}</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">{{ $user->name }}</h1>
+                            <p class="text-teal-600 font-bold text-sm uppercase tracking-wider mb-4">{{ $user->workerProfile->service->name ?? 'Social Worker' }}</p>
+
+                            @if($user->is_verified)
+                                <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-6">
+                                    <svg class="w-4 h-4 mr-1.5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.64.304 1.24.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Pro Verified
+                                </div>
                             @endif
-                        </div>
 
-                        <div class="space-y-3 mb-6">
-                            <button @click="open = true" class="w-full py-4 bg-gray-900 hover:bg-black text-white font-black rounded-xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
-                                Book Appointment
-                            </button>
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <!-- WhatsApp Button -->
+                                @if($user->phone)
+                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->phone) }}" target="_blank" class="flex flex-col items-center justify-center py-3 bg-green-50 hover:bg-green-100 rounded-xl text-green-700 transition-all border border-green-100 group">
+                                        <svg class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                                        <span class="text-[10px] font-bold uppercase">WhatsApp</span>
+                                    </a>
+                                    <!-- Call Button -->
+                                    <a href="tel:{{ $user->phone }}" class="flex flex-col items-center justify-center py-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-700 transition-all border border-blue-100 group">
+                                        <svg class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                        <span class="text-[10px] font-bold uppercase">Call Me</span>
+                                    </a>
+                                @endif
+                            </div>
 
-                            <a href="{{ route('chat.show', $user->id) }}" class="w-full py-4 bg-white text-gray-900 border-2 border-gray-900 hover:bg-gray-50 font-black rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                                Message Me
-                            </a>
-                        </div>
-                        
-                        <div class="flex justify-center border-t border-gray-50 pt-4 mt-2">
-                            <form action="{{ route('favorites.toggle', $user->workerProfile->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="flex items-center text-sm font-bold transition-all px-4 py-2 rounded-lg 
-                                    {{ Auth::user() && Auth::user()->favorites->contains($user->workerProfile->id) ? 'text-red-600 bg-red-50' : 'text-gray-400 hover:text-red-500 hover:bg-gray-50' }}">
-                                    <svg class="w-5 h-5 mr-2 {{ Auth::user() && Auth::user()->favorites->contains($user->workerProfile->id) ? 'fill-current' : 'fill-none stroke-current' }}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                    {{ Auth::user() && Auth::user()->favorites->contains($user->workerProfile->id) ? 'Saved' : 'Save Worker' }}
+                            <div class="space-y-3 mb-6">
+                                <button @click="open = true" class="w-full py-4 bg-gray-900 hover:bg-black text-white font-black rounded-xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
+                                    Book Appointment
                                 </button>
-                            </form>
+
+                                <a href="{{ route('chat.show', $user->id) }}" class="w-full py-4 bg-white text-gray-900 border-2 border-gray-900 hover:bg-gray-50 font-black rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                    Message Me
+                                </a>
+                            </div>
+
+                            <div class="flex justify-center border-t border-gray-50 pt-4 mt-2">
+                                <form action="{{ route('favorites.toggle', $user->workerProfile->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="flex items-center text-sm font-bold transition-all px-4 py-2 rounded-lg 
+                                        {{ Auth::user() && Auth::user()->favorites->contains($user->workerProfile->id) ? 'text-red-600 bg-red-50' : 'text-gray-400 hover:text-red-500 hover:bg-gray-50' }}">
+                                        <svg class="w-5 h-5 mr-2 {{ Auth::user() && Auth::user()->favorites->contains($user->workerProfile->id) ? 'fill-current' : 'fill-none stroke-current' }}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                        {{ Auth::user() && Auth::user()->favorites->contains($user->workerProfile->id) ? 'Saved' : 'Save Worker' }}
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
 
                     <!-- Achievements & Badges -->
                     @php $achievements = $user->workerProfile->getAchievements(); @endphp
@@ -110,6 +116,8 @@
                                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                                         @elseif($badge['icon'] === 'fire')
                                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.4503-.342c-.714.442-1.531.634-2.311.634-2.127 0-3.991-1.45-3.991-3.595 0-.671.223-1.302.618-1.81a1 1 0 00-.162-1.313 1.001 1.001 0 00-1.144-.133C2.808 2.146 1.906 3.559 1.906 5.176c0 3.299 2.492 5.925 5.538 5.925.79 0 1.553-.171 2.237-.49a1 1 0 00.538-.89 1 1 0 00-.63-.919c-.392-.156-.73-.43-1.002-.796 1.047-.033 2.044-.317 2.846-.826 1.517-.962 2.327-2.346 2.327-3.853 0-.62-.12-1.222-.34-1.783z" clip-rule="evenodd"></path></svg>
+                                        @elseif($badge['icon'] === 'shield-check')
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                         @endif
                                     </div>
                                     <div>
@@ -447,4 +455,4 @@
             </div>
         @endif
     </div>
-</x-app-layout>
+@endsection

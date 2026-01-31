@@ -10,22 +10,14 @@ use Illuminate\Support\Str;
 
 class ServiceController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            if (! $request->user() || $request->user()->role !== User::ROLE_ADMIN) {
-                abort(403);
-            }
-            return $next($request);
-        });
-    }
+
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $services = Service::withCount('workers')->orderBy('name')->paginate(10);
+        $services = Service::withCount('workerProfiles')->orderBy('name')->paginate(10);
         return view('admin.services.index', compact('services'));
     }
 
@@ -53,7 +45,7 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        if ($service->workers()->count() > 0) {
+        if ($service->workerProfiles()->count() > 0) {
             return back()->withErrors(['error' => 'Cannot delete service, it is assigned to workers.']);
         }
 

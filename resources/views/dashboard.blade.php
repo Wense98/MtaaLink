@@ -1,12 +1,10 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+@section('title', __('Dashboard'))
+
+@section('content')
+  <div class="py-6">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
             <!-- Welcome Card -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -109,15 +107,61 @@
                              </div>
                         </div>
 
-                        <div class="space-y-3">
-                            <a href="{{ route('worker.show', Auth::id()) }}" target="_blank" class="block w-full text-center px-4 py-3 bg-gray-900 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-black transition-all shadow-lg active:scale-95">
-                                View Public Profile
-                            </a>
-                            <a href="{{ route('worker-profile.edit') }}" class="block w-full text-center px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-gray-50 transition-all">
-                                Update My Portfolio
-                            </a>
+
+                            <div class="space-y-3">
+                                <a href="{{ route('worker.show', Auth::id()) }}" target="_blank" class="block w-full text-center px-4 py-3 bg-gray-900 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-black transition-all shadow-lg active:scale-95">
+                                    View Public Profile
+                                </a>
+                                <a href="{{ route('worker-profile.edit') }}" class="block w-full text-center px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-gray-50 transition-all">
+                                    Update My Portfolio
+                                </a>
+                                <a href="{{ route('chat.support') }}" class="block w-full text-center px-4 py-2 border-2 border-dashed border-teal-100 text-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-50 transition-all">
+                                    Contact Support
+                                </a>
+                            </div>
                         </div>
-                    </div>
+
+                        <!-- Marketplace Activity (Worker) -->
+                        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border border-gray-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h4 class="font-bold text-lg text-gray-900 dark:text-gray-100 italic">Marketplace Activity</h4>
+                                <a href="{{ route('jobs.index') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest hover:underline">Find Jobs</a>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl text-center border border-indigo-100 dark:border-indigo-800">
+                                    <span class="block text-3xl font-black text-indigo-600 dark:text-indigo-400">
+                                        {{ \App\Models\JobBid::where('worker_id', Auth::id())->where('status', 'pending')->count() }}
+                                    </span>
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Active Bids</span>
+                                </div>
+                                <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-2xl text-center border border-green-100 dark:border-green-800">
+                                    <span class="block text-3xl font-black text-green-600 dark:text-green-400">
+                                        {{ \App\Models\JobBid::where('worker_id', Auth::id())->where('status', 'accepted')->count() }}
+                                    </span>
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Jobs Won</span>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <p class="text-xs text-gray-500 italic mb-2">Recent Opportunity:</p>
+                                @php
+                                    $latestJob = \App\Models\PublicJob::where('service_id', Auth::user()->workerProfile->service_id)
+                                        ->where('status', 'open')
+                                        ->latest()
+                                        ->first();
+                                @endphp
+                                @if($latestJob)
+                                    <a href="{{ route('jobs.show', $latestJob->id) }}" class="block p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors group">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-xs font-bold text-gray-900 dark:text-gray-100 truncate max-w-[150px]">{{ $latestJob->title }}</span>
+                                            <span class="text-[10px] font-black text-teal-600">TZS {{ number_format($latestJob->budget) }}</span>
+                                        </div>
+                                        <span class="text-[10px] text-gray-400 uppercase tracking-wider">{{ $latestJob->ward }} &bull; {{ $latestJob->created_at->diffForHumans() }}</span>
+                                    </a>
+                                @else
+                                    <p class="text-xs text-gray-400">No new jobs in your category currently.</p>
+                                @endif
+                            </div>
+                        </div>
 
                     <!-- Activity Trends Chart -->
                     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border border-gray-100">
@@ -209,6 +253,76 @@
                                 </p>
                              @endif
                          </div>
+                    </div>
+
+                    <!-- Mtaa Pulse & Safety -->
+                    <div class="space-y-6">
+                        <!-- Neighborhood Pulse -->
+                        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-100">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="relative flex h-3 w-3">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                </span>
+                                <h4 class="font-bold text-gray-900 dark:text-gray-100 text-lg italic">Mtaa Pulse™</h4>
+                            </div>
+                            
+                            @php
+                                $regionalPulse = \App\Models\Request::with(['worker', 'user'])
+                                    ->latest()
+                                    ->take(4)
+                                    ->get();
+                            @endphp
+
+                            <div class="space-y-4">
+                                @foreach($regionalPulse as $脉)
+                                    <div class="flex items-start gap-4 p-3 rounded-xl bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100 transition-all group">
+                                         @if($脉->worker->avatar)
+                                            <img src="{{ asset('storage/' . $脉->worker->avatar) }}" class="w-8 h-8 rounded-full border border-white shadow-sm">
+                                         @else
+                                            <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-[10px] font-bold uppercase shadow-sm">
+                                                {{ substr($脉->worker->name, 0, 1) }}
+                                            </div>
+                                         @endif
+                                         <div class="min-w-0">
+                                             <p class="text-[10px] text-gray-500 leading-tight">
+                                                 <span class="font-bold text-gray-900 group-hover:text-teal-600 transition-colors">{{ $脉->user->name }}</span> 
+                                                 hired {{ $脉->worker->name }} in 
+                                                 <span class="font-black text-gray-900">{{ $脉->worker->workerProfile->ward ?: 'Neighborhood' }}</span>
+                                             </p>
+                                             <p class="text-[9px] text-gray-400 mt-1 uppercase tracking-tighter">{{ $脉->created_at->diffForHumans() }}</p>
+                                         </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Safety Centre Card -->
+                        <div class="bg-gradient-to-br from-indigo-900 to-indigo-800 text-white shadow-xl rounded-xl p-6 relative overflow-hidden">
+                             <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl"></div>
+                             <h4 class="font-black italic text-lg mb-4">Mtaa Safety Centre</h4>
+                             <div class="space-y-4">
+                                 <div class="flex items-center gap-3">
+                                     <div class="w-6 h-6 bg-white/10 rounded flex items-center justify-center">
+                                         <svg class="w-3 h-3 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                     </div>
+                                     <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-100">Escrow Payment Protection</span>
+                                 </div>
+                                 <div class="flex items-center gap-3">
+                                     <div class="w-6 h-6 bg-white/10 rounded flex items-center justify-center">
+                                         <svg class="w-3 h-3 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                     </div>
+                                     <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-100">Verified Worker Background</span>
+                                 </div>
+                                 <div class="flex items-center gap-3">
+                                     <div class="w-6 h-6 bg-white/10 rounded flex items-center justify-center">
+                                         <svg class="w-3 h-3 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                     </div>
+                                     <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-100">24/7 Dispute Support</span>
+                                 </div>
+                             </div>
+                             <a href="{{ route('chat.support') }}" class="mt-6 block w-full text-center py-2 bg-white text-indigo-900 font-black text-xs uppercase tracking-widest rounded-lg shadow-xl shadow-indigo-900/50 hover:bg-indigo-50 transition-colors">Chat with Admin</a>
+                        </div>
                     </div>
 
                     <!-- Availability Status -->
@@ -433,6 +547,34 @@
                             </div>
                         </div>
 
+                        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-2xl p-6 border-2 border-indigo-100 dark:border-indigo-900 overflow-hidden relative group">
+                            <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 dark:bg-indigo-900/30 rounded-full transition-transform group-hover:scale-150"></div>
+                            <div class="relative">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none">Financial Oversight</h4>
+                                    @php
+                                        $disputeCount = \App\Models\Transaction::whereNotNull('disputed_at')->where('status', 'held')->count();
+                                    @endphp
+                                    @if($disputeCount > 0)
+                                        <span class="px-2 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded-full animate-pulse border border-red-200">
+                                            {{ $disputeCount }} Active Disputes
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">In Escrow</p>
+                                        <p class="text-xl font-black text-gray-900 dark:text-gray-100">TZS {{ number_format(\App\Models\Transaction::where('status', 'held')->sum('amount')) }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">Growth</p>
+                                        <p class="text-xl font-black text-teal-600">+{{ \App\Models\Transaction::where('created_at', '>=', now()->subDays(30))->count() }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ route('admin.transactions.index') }}" class="mt-4 block w-full text-center py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase rounded-lg transition-colors">Audit Payments</a>
+                            </div>
+                        </div>
+
                         <!-- Quick Actions -->
                         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-6 border border-gray-100 space-y-3">
                              <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2">Management</h4>
@@ -445,6 +587,10 @@
                              <a href="{{ route('admin.verification.index') }}" class="block w-full text-center px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-colors font-medium text-sm">
                                  Verification Requests
                              </a>
+                             <a href="{{ route('admin.transactions.disputes') }}" class="block w-full text-center px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors font-medium text-sm">
+                                 Dispute Management
+                             </a>
+                        </div>
                         </div>
                     </div>
 
@@ -534,7 +680,47 @@
                         <svg class="w-10 h-10 mb-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         <h4 class="font-bold text-xl mb-2">Find Help</h4>
                         <p class="text-teal-100 text-sm mb-4">Search for social workers in your Mtaa.</p>
-                        <a href="{{ route('search.index') }}" class="inline-block px-4 py-2 bg-white text-teal-600 font-bold rounded-lg shadow-sm hover:shadow-md transition-shadow">Start Searching</a>
+                        <a href="{{ route('search.index') }}" class="inline-block px-4 py-2 bg-white text-teal-600 font-bold rounded-lg shadow-sm hover:shadow-md transition-shadow">Hire a Pro</a>
+                    </div>
+
+                     <!-- Wallet Status Card -->
+                    <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 border border-gray-100 flex flex-col justify-between group overflow-hidden relative">
+                         <div class="absolute -top-4 -right-4 w-16 h-16 bg-emerald-50 rounded-full opacity-50 group-hover:scale-150 transition-transform"></div>
+                         <div class="relative">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                </div>
+                                <div class="flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
+                                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Protected
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-gray-900 dark:text-gray-100">Mtaa Pay™ Wallet</h4>
+                            <p class="text-xs text-gray-500 mb-4">Funds held in secure escrow.</p>
+                        </div>
+                        <a href="{{ route('wallet.index') }}" class="block w-full text-center px-4 py-2 bg-gray-900 hover:bg-black text-white font-bold rounded-lg transition-colors text-xs uppercase tracking-widest shadow-lg shadow-emerald-500/10">
+                            Check Funds
+                        </a>
+                    </div>
+
+                    <!-- Market Postings Card -->
+                    <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </div>
+                                <span class="text-2xl font-black text-gray-900 dark:text-gray-100">
+                                    {{ Auth::user()->publicJobs->count() }}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-gray-900 dark:text-gray-100">My Job Posts</h4>
+                            <p class="text-xs text-gray-500 mb-4">You have {{ Auth::user()->publicJobs()->where('status', 'open')->count() }} active requirements.</p>
+                        </div>
+                        <a href="{{ route('jobs.my-jobs') }}" class="block w-full text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors text-xs uppercase tracking-widest">
+                            Manage Jobs
+                        </a>
                     </div>
 
                     <!-- My Requests List -->
@@ -566,7 +752,16 @@
                                                     <p class="text-[10px] text-teal-700 italic">"{{ $req->worker_notes }}"</p>
                                                 @endif
                                                 
-                                                @if(session('status') === 'quote-accepted' && session('request_id') == $req->id)
+                                                @if($req->status === 'accepted')
+                                                    <!-- Show Pay Button -->
+                                                    <div class="mt-2">
+                                                        <a href="{{ route('wallet.pay', $req->id) }}" class="block w-full py-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-center text-[10px] font-black uppercase rounded-lg shadow-md hover:from-teal-700 hover:to-emerald-700 transition-all flex items-center justify-center gap-2">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                                            Complete Payment
+                                                        </a>
+                                                        <p class="text-[9px] text-center text-teal-600 mt-1">Funds held in escrow</p>
+                                                    </div>
+                                                @elseif(session('status') === 'quote-accepted' && session('request_id') == $req->id)
                                                     <div class="mt-2 text-[10px] font-bold text-green-600 flex items-center gap-1">
                                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                                         Quote Accepted
@@ -635,4 +830,4 @@
 
         </div>
     </div>
-</x-app-layout>
+@endsection
