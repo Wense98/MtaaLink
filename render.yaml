@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: mtaalink
+    runtime: php
+    buildCommand: ./build.sh
+    startCommand: apachectl -D FOREGROUND
+    envVars:
+      - key: APP_KEY
+        fromValue: ${APP_KEY}
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        fromValue: ${RENDER_EXTERNAL_URL}
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromValue: ${DB_HOST}
+      - key: DB_PORT
+        fromValue: ${DB_PORT}
+      - key: DB_DATABASE
+        fromValue: ${DB_DATABASE}
+      - key: DB_USERNAME
+        fromValue: ${DB_USERNAME}
+      - key: DB_PASSWORD
+        fromValue: ${DB_PASSWORD}
+      - key: NODE_VERSION
+        value: 18.0.0
+
+databases:
+  - name: mtaalink_db
+    databaseName: mtaalink
+    user: mtaalink_user
+    plan: free
