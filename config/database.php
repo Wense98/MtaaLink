@@ -60,6 +60,7 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? [
                 PDO::MYSQL_ATTR_SSL_CA => base_path('database/aiven-ca.pem'),
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
             ] : [],
         ],
 
